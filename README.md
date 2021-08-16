@@ -3,30 +3,30 @@
 This is an experimental project made with [Vue.js 2](https://vuejs.org/) and [three.js](https://threejs.org/). I'm using this to
 try as many new things as I can. For science!
 
+Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
+
 ## Progress
 
 ### Day 1
 
-* [X] Create a basic game loop that runs in Vue.
-* [X] Measure time to display the creation time, current time, session duration, and fine tune the game loop
-* [X] Track/capture mouse and keyboard input.
-* [X] Disable the default right-click context menu from the browser
-* [X] Capture when the mouse leaves the page.
-* [X] Capture multiple keyboard presses at once.
-* [X] Render a 3D object on the canvas element from the [three.js example on their npm page](https://www.npmjs.com/package/three).
-* [X] Control the 3D object with the mouse input.
+* [X] - Create a basic game loop that runs in Vue.
+* [X] - Measure time to display the creation time, current time, session duration, and fine tune the game loop
+* [X] - Track/capture mouse and keyboard input.
+* [X] - Disable the default right-click context menu from the browser
+* [X] - Capture when the mouse leaves the page.
+* [X] - Capture multiple keyboard presses at once.
+* [X] - Render a 3D object on the canvas element from the [three.js example on their npm page](https://www.npmjs.com/package/three).
+* [X] - Control the 3D object with the mouse input.
 
 ![Gif of Day 1 Progress](https://wforbes.net/wp-content/uploads/2021/08/vue_game_day1.gif)
 
 ### Next Steps
 
-* [ ] Resize the canvas with the browser.
-* [ ] Control the 3D camera with mouse/keyboard input.
-* [ ] Control the 3D object with keyboard input, independent from the camera.
-* [ ] Render a more complex scene from the [three.js examples](https://threejs.org/examples)
+* [ ] - Resize the canvas with the browser.
+* [ ] - Control the 3D camera with mouse/keyboard input.
+* [ ] - Control the 3D object with keyboard input, independent from the camera.
+* [ ] - Render a more complex scene from the [three.js examples](https://threejs.org/examples)
 * ... continue to add to this list and see where it goes!
-
-
 
 ## Setup Instructions
 
