@@ -25,7 +25,10 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 * [ ] - Resize the canvas with the browser.
 * [ ] - Control the 3D camera with mouse/keyboard input.
 * [ ] - Control the 3D object with keyboard input, independent from the camera.
+* [ ] - Experiment with making it mobile friendly.
 * [ ] - Render a more complex scene from the [three.js examples](https://threejs.org/examples)
+* [ ] - Add a menu page to open different demos
+* [ ] - Add a way to return to the menu page from the demos
 * ... continue to add to this list and see where it goes!
 
 ## Setup Instructions
