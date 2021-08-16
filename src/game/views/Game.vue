@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 <template>
 	<div class="game">
 		<div id="output">
@@ -36,13 +37,24 @@
 				mousedown
 				<div></div>
 			</div>
+			<br />
+			<div id="keys">
+				<div id="key-down">
+					keys down:
+					<span v-for="key of input.keys.keysDown" :key="key">{{
+						`${key} `
+					}}</span>
+				</div>
+				<div id="key-map">
+					keymap:
+					<div v-for="(keyValue, keyName) in input.keys.keyMap" :key="keyName">
+						{{ keyName }} : {{ keyValue }}
+					</div>
+				</div>
+			</div>
 		</div>
-		<div id="overlay" @mousemove="mousemove" @mouseleave="mouseleave"></div>
-		<GameCanvas
-			ref="gameCanvasComponent"
-			:mousemove="input.mousemove"
-			:renderPulse="render"
-		/>
+		<div id="overlay" ref="overlay" tabindex="-1"></div>
+		<GameCanvas ref="gameCanvasComponent" :mousemove="input.mousemove" />
 	</div>
 </template>
 
@@ -67,11 +79,13 @@ export default {
 				},
 				session: undefined
 			},
-			document: {},
 			requestAnimation: "",
-			render: false,
 			drawCount: 0,
 			input: {
+				keys: {
+					keysDown: [],
+					keyMap: {}
+				},
 				mousemove: {
 					offsetX: undefined,
 					offsetY: undefined,
@@ -97,13 +111,34 @@ export default {
 		};
 	},
 	mounted() {
-		this.output.mousemove = document.getElementById("mousemove");
-		this.document = document;
 		this.init();
+	},
+	destroyed() {
+		this.tearDown();
 	},
 	methods: {
 		init() {
+			this.$refs.overlay.focus();
+			this.addInputListeners();
 			this.animate();
+		},
+		addInputListeners() {
+			document.addEventListener("keydown", this.handleKey);
+			document.addEventListener("keyup", this.handleKey);
+			document.addEventListener("mousemove", this.mousemove);
+			document.addEventListener("mouseleave", this.mouseleave);
+			document.addEventListener("click", this.handleLeftClick);
+			document.addEventListener("contextmenu", this.handleRightClick);
+		},
+		tearDown() {
+			this.removeInputListeners();
+		},
+		removeInputListeners() {
+			document.removeEventListener("keydown", this.handleKey);
+			document.removeEventListener("keyup", this.handleKey);
+			document.removeEventListener("mousemove", this.mousemove);
+			document.removeEventListener("mouseleave", this.mouseleave);
+			document.removeEventListener("contextmenu", this.handleRightClick);
 		},
 		mousemove(event) {
 			event.preventDefault();
@@ -131,7 +166,34 @@ export default {
 			this.input.mouseleave.last.clientX = event.clientX;
 			this.input.mouseleave.last.clientY = event.clientY;
 		},
+		handleKey(event) {
+			event.preventDefault();
+			this.input.keys.keyMap[event.code] = event.type == "keydown";
+		},
+		checkKeyMap() {
+			for (let key in this.input.keys.keyMap) {
+				if (this.input.keys.keyMap[key] === true) {
+					if (!this.input.keys.keysDown.includes(key)) {
+						this.input.keys.keysDown.push(key);
+					}
+				} else {
+					if (this.input.keys.keysDown.includes(key)) {
+						let keyIdx = this.input.keys.keysDown.findIndex((k) => k === key);
+						this.input.keys.keysDown.splice(keyIdx, 1);
+					}
+					delete this.input.keys.keyMap[key];
+				}
+			}
+		},
+		handleLeftClick(event) {
+			console.log(event);
+		},
+		handleRightClick(event) {
+			event.preventDefault();
+			console.log(event);
+		},
 		animate() {
+			this.$refs.overlay.focus();
 			this.requestAnimation = requestAnimationFrame(this.animate.bind(this));
 			this.draw();
 			this.tick();
@@ -144,6 +206,7 @@ export default {
 			this.time.current.actual = new Date();
 			this.time.current.display = this.getTimeDisplay();
 			this.time.session = this.getSessionDuration();
+			this.checkKeyMap();
 		},
 		getTimeDisplay() {
 			const date = new Date();
