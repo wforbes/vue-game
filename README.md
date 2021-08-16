@@ -1,4 +1,6 @@
-# omniajs
+# Vue Game
+
+This is a game shell written in Vue.js 2 that I'm using to experiment with and have some fun!
 
 ## Project setup
 ```
@@ -14,11 +16,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
