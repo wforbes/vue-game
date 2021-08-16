@@ -38,13 +38,21 @@
 			</div>
 		</div>
 		<div id="overlay" @mousemove="mousemove" @mouseleave="mouseleave"></div>
-		<canvas id="game-canvas"></canvas>
+		<GameCanvas
+			ref="gameCanvasComponent"
+			:mousemove="input.mousemove"
+			:renderPulse="render"
+		/>
 	</div>
 </template>
 
 <script>
+import GameCanvas from "@/game/components/GameCanvas.vue";
 export default {
 	name: "Game",
+	components: {
+		GameCanvas
+	},
 	data() {
 		return {
 			time: {
@@ -61,8 +69,8 @@ export default {
 			},
 			document: {},
 			requestAnimation: "",
+			render: false,
 			drawCount: 0,
-			canvas: {},
 			input: {
 				mousemove: {
 					offsetX: undefined,
@@ -89,7 +97,6 @@ export default {
 		};
 	},
 	mounted() {
-		this.canvas = document.getElementById("game-canvas");
 		this.output.mousemove = document.getElementById("mousemove");
 		this.document = document;
 		this.init();
@@ -119,17 +126,18 @@ export default {
 			this.input.mousemove.shiftKey = event.shiftKey;
 		},
 		mouseleave(event) {
-			console.log(event);
+			//console.log(event);
 			this.input.mouseleave.leaveCount++;
 			this.input.mouseleave.last.clientX = event.clientX;
 			this.input.mouseleave.last.clientY = event.clientY;
 		},
 		animate() {
-			this.requestAnimation = requestAnimationFrame(this.animate);
+			this.requestAnimation = requestAnimationFrame(this.animate.bind(this));
 			this.draw();
 			this.tick();
 		},
 		draw() {
+			this.$refs.gameCanvasComponent.render();
 			this.drawCount++;
 		},
 		tick() {
@@ -181,13 +189,6 @@ body {
 	height: 100%;
 	z-index: 99;
 	opacity: 0.1;
-}
-canvas {
-	position: fixed;
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100%;
 }
 #output {
 	width: 250px;
