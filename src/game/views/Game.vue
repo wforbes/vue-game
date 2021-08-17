@@ -5,7 +5,8 @@
 			<div id="created-time">Created Time: {{ time.created.display }}</div>
 			<div id="current-time">Current Time: {{ time.current.display }}</div>
 			<div id="session-duration">Session Duration: {{ time.session }}</div>
-			<div id="count">Draw Count: {{ drawCount }}</div>
+			<div id="count">Render Count: {{ gameLoop.renderCount }}</div>
+			<div id="fps">avg FPS: {{ gameLoop.fps.toFixed(3) }}</div>
 			<br />
 			<div id="mousemove">
 				mousemove
@@ -59,6 +60,7 @@
 </template>
 
 <script>
+import { GameLoop } from "@/game/controllers/GameLoop.js";
 import GameCanvas from "@/game/components/GameCanvas.vue";
 export default {
 	name: "Game",
@@ -67,6 +69,7 @@ export default {
 	},
 	data() {
 		return {
+			gameLoop: new GameLoop(this),
 			time: {
 				created: {
 					actual: new Date(),
@@ -79,8 +82,6 @@ export default {
 				},
 				session: undefined
 			},
-			requestAnimation: "",
-			drawCount: 0,
 			input: {
 				keys: {
 					keysDown: [],
@@ -118,9 +119,11 @@ export default {
 	},
 	methods: {
 		init() {
-			this.$refs.overlay.focus();
+			if (this.gameLoop === undefined) this.gameLoop = new GameLoop(this);
 			this.addInputListeners();
-			this.animate();
+			this.$refs.overlay.focus();
+			//this.animate();
+			this.gameLoop.run(0);
 		},
 		addInputListeners() {
 			document.addEventListener("keydown", this.handleKey);
@@ -193,20 +196,22 @@ export default {
 			console.log(event);
 		},
 		animate() {
-			this.$refs.overlay.focus();
 			this.requestAnimation = requestAnimationFrame(this.animate.bind(this));
-			this.draw();
-			this.tick();
+			this.render();
+			this.update();
 		},
-		draw() {
-			this.$refs.gameCanvasComponent.render();
-			this.drawCount++;
-		},
-		tick() {
+		update(updateDelta = 0) {
+			this.updateDelta = updateDelta;
 			this.time.current.actual = new Date();
 			this.time.current.display = this.getTimeDisplay();
 			this.time.session = this.getSessionDuration();
 			this.checkKeyMap();
+		},
+		panic() {
+			console.log("We got some lag bois.");
+		},
+		render() {
+			this.$refs.gameCanvasComponent.render();
 		},
 		getTimeDisplay() {
 			const date = new Date();

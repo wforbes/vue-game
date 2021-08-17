@@ -10,9 +10,9 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 ### Day 1
 
 * [X] - Create a basic game loop that runs in Vue.
-* [X] - Measure time to display the creation time, current time, session duration, and fine tune the game loop
+* [X] - Measure time and display the creation time, current time, and session duration.
 * [X] - Track/capture mouse and keyboard input.
-* [X] - Disable the default right-click context menu from the browser
+* [X] - Disable the default right-click context menu from the browser.
 * [X] - Capture when the mouse leaves the page.
 * [X] - Capture multiple keyboard presses at once.
 * [X] - Render a 3D object on the canvas element from the [three.js example on their npm page](https://www.npmjs.com/package/three).
@@ -22,11 +22,12 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 
 ### Next Steps
 
-* [ ] - Resize the canvas with the browser.
-* [ ] - Control the 3D camera with mouse/keyboard input.
-* [ ] - Control the 3D object with keyboard input, independent from the camera.
+* [X] - Measure FPS and fine tune the game loop.
+* [ ] - Resize the canvas with the browser window.
+* [ ] - Try adding stats.js for performance monitoring.
+* [ ] - Improve mouse/keyboard controls related to camera, scene, and mesh. ([three.js controls code](https://github.com/mrdoob/three.js/tree/master/examples/jsm/controls))
+* [ ] - Try some more demos from the [three.js examples](https://threejs.org/examples)
 * [ ] - Experiment with making it mobile friendly.
-* [ ] - Render a more complex scene from the [three.js examples](https://threejs.org/examples)
 * [ ] - Add a menu page to open different demos
 * [ ] - Add a way to return to the menu page from the demos
 * ... continue to add to this list and see where it goes!
