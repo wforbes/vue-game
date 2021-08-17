@@ -1,7 +1,7 @@
 # Vue Game
 
 This is an experimental project made with [Vue.js 2](https://vuejs.org/) and [three.js](https://threejs.org/). I'm using this to
-try as many new things as I can. For science!
+try to learn as many new things as I can. For science!
 
 Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 
@@ -27,6 +27,8 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 * [X] - Try adding stats.js for performance monitoring.
 * [X] - Only rotate cube when dragging with CTRL + leftClick.
 * [X] - When mouse hovers over the cube, highlight the cube slightly.
+* [X] - Add more cubes, mimicing [threejs Fundamentals](https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html),
+but randomizing their color and x/y positions so that they don't collide
 * [ ] - Improve mouse/keyboard controls related to camera, scene, and mesh. ([three.js controls code](https://github.com/mrdoob/three.js/tree/master/examples/jsm/controls))
 * [ ] - Try some more demos from the [three.js examples](https://threejs.org/examples)
 * [ ] - Experiment with making it mobile friendly.

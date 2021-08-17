@@ -32,7 +32,7 @@ export class GameLoop {
 		this.accumulateDeltaTime(timestamp);
 		this.computeFPSEstimate(timestamp);
 		this.regulatedUpdate();
-		this.render();
+		this.render(timestamp);
 		this.stats.end();
 		requestAnimationFrame(this.run.bind(this));
 	}
@@ -72,8 +72,8 @@ export class GameLoop {
 		this.gameComponent.panic();
 	}
 
-	render() {
-		this.gameComponent.render();
+	render(timestamp) {
+		this.gameComponent.render(timestamp);
 		this.renderCount++;
 	}
 }

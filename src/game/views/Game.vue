@@ -112,7 +112,7 @@ export default {
 		},
 		animate() {
 			this.requestAnimation = requestAnimationFrame(this.animate.bind(this));
-			this.render();
+			this.render(this.requestAnimation);
 			this.update();
 		},
 		update(updateDelta = 0) {
@@ -126,8 +126,8 @@ export default {
 		panic() {
 			console.log("We got some lag bois.");
 		},
-		render() {
-			this.$refs.gameCanvasComponent.render();
+		render(timestamp) {
+			this.$refs.gameCanvasComponent.render(timestamp);
 		},
 		getTimeDisplay() {
 			const date = new Date();
