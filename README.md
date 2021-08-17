@@ -25,7 +25,8 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 * [X] - Measure FPS and fine tune the game loop.
 * [X] - Resize the canvas with the browser window.
 * [X] - Try adding stats.js for performance monitoring.
-* [X] - Only rotate cube when dragging with CTRL + leftClick
+* [X] - Only rotate cube when dragging with CTRL + leftClick.
+* [X] - When mouse hovers over the cube, highlight the cube slightly.
 * [ ] - Improve mouse/keyboard controls related to camera, scene, and mesh. ([three.js controls code](https://github.com/mrdoob/three.js/tree/master/examples/jsm/controls))
 * [ ] - Try some more demos from the [three.js examples](https://threejs.org/examples)
 * [ ] - Experiment with making it mobile friendly.

@@ -16,7 +16,9 @@ export default {
 			geometry: undefined,
 			material: undefined,
 			mesh: undefined,
-			light: undefined
+			pointer: undefined,
+			raycaster: undefined,
+			INTERSECTED: undefined
 		};
 	},
 	mounted() {
@@ -32,6 +34,12 @@ export default {
 		},
 		mouseMovementY() {
 			return this.input.mouseMovement.y;
+		},
+		mousePositionX() {
+			return this.input.mouseMovement.clientX;
+		},
+		mousePositionY() {
+			return this.input.mouseMovement.clientY;
 		}
 	},
 	watch: {
@@ -52,6 +60,12 @@ export default {
 			) {
 				this.rotateX(newY);
 			}
+		},
+		mousePositionX(newX) {
+			this.setPointerX(newX);
+		},
+		mousePositionY(newY) {
+			this.setPointerY(newY);
 		}
 	},
 	methods: {
@@ -72,6 +86,12 @@ export default {
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
 		},
+		setPointerX(mouseX) {
+			this.pointer.x = (mouseX / window.innerWidth) * 2 - 1;
+		},
+		setPointerY(mouseY) {
+			this.pointer.y = (mouseY / window.innerHeight) * 2 - 1;
+		},
 		initThree() {
 			this.camera = new THREE.PerspectiveCamera(
 				70,
@@ -81,13 +101,32 @@ export default {
 			);
 			this.camera.position.z = 1;
 
+			this.pointer = new THREE.Vector2();
+			this.raycaster = new THREE.Raycaster();
+
 			this.scene = new THREE.Scene();
 
 			this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
 			this.material = new THREE.MeshNormalMaterial();
 
-			this.mesh = new THREE.Mesh(this.geometry, this.material);
+			//this.mesh = new THREE.Mesh(this.geometry, this.material);
+			this.mesh = new THREE.Mesh(
+				this.geometry,
+				new THREE.MeshLambertMaterial({ color: 0x097969 })
+			);
 			this.scene.add(this.mesh);
+
+			this.light = new THREE.DirectionalLight(0xff33bb, 2);
+			this.light.position.set(1, 1, 1).normalize();
+			this.scene.add(this.light);
+
+			const light1 = new THREE.DirectionalLight(0xffcc22, 2);
+			light1.position.set(-1, 1, 1).normalize();
+			this.scene.add(light1);
+
+			const light2 = new THREE.DirectionalLight(0xccff11, 2);
+			light2.position.set(1, -1, 1).normalize();
+			this.scene.add(light2);
 
 			this.renderer = new THREE.WebGLRenderer({
 				canvas: this.canvas,
@@ -103,7 +142,38 @@ export default {
 			//TODO: need to check cube x and only invert it if it's right side up
 			this.mesh.rotation.y += mouseX / 100;
 		},
+		makeCubeInstance(geometry, color, x) {
+			const material = new THREE.MeshPhongMaterial({ color });
+
+			const cube = new THREE.Mesh(geometry, material);
+			scene.add(cube);
+
+			cube.position.x = x;
+
+			return cube;
+		},
 		render() {
+			this.raycaster.setFromCamera(this.pointer, this.camera);
+			const intersects = this.raycaster.intersectObjects(this.scene.children);
+			if (intersects.length > 0) {
+				if (this.INTERSECTED != intersects[0].object) {
+					if (this.INTERSECTED)
+						this.INTERSECTED.material.emissive.setHex(
+							this.INTERSECTED.currentHex
+						);
+					this.INTERSECTED = intersects[0].object;
+					this.INTERSECTED.currentHex =
+						this.INTERSECTED.material.emissive.getHex();
+					this.INTERSECTED.material.emissive.setHex(0x333333);
+				}
+			} else {
+				if (this.INTERSECTED)
+					this.INTERSECTED.material.emissive.setHex(
+						this.INTERSECTED.currentHex
+					);
+
+				this.INTERSECTED = null;
+			}
 			this.renderer.render(this.scene, this.camera);
 		}
 	}
