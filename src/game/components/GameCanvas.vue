@@ -5,7 +5,7 @@
 import * as THREE from "three";
 export default {
 	name: "GameCanvas",
-	props: ["mousemove"],
+	props: ["input"],
 	data() {
 		return {
 			//three: THREE,
@@ -15,7 +15,8 @@ export default {
 			renderer: undefined,
 			geometry: undefined,
 			material: undefined,
-			mesh: undefined
+			mesh: undefined,
+			light: undefined
 		};
 	},
 	mounted() {
@@ -27,18 +28,28 @@ export default {
 	},
 	computed: {
 		mousemoveX() {
-			return this.mousemove.offsetX;
+			return this.input.mousemove.movementX;
 		},
 		mousemoveY() {
-			return this.mousemove.offsetY;
+			return this.input.mousemove.movementY;
 		}
 	},
 	watch: {
 		mousemoveX(newX /*, oldX*/) {
-			this.rotateY(newX);
+			if (
+				this.input.mousedown.left &&
+				(this.keyIsDown("ControlLeft") || this.keyIsDown("ControlRight"))
+			) {
+				this.rotateY(newX);
+			}
 		},
 		mousemoveY(newY /*, oldY*/) {
-			this.rotateX(newY);
+			if (
+				this.input.mousedown.left &&
+				(this.keyIsDown("ControlLeft") || this.keyIsDown("ControlRight"))
+			) {
+				this.rotateX(newY);
+			}
 		}
 	},
 	methods: {
@@ -84,14 +95,21 @@ export default {
 			this.renderer.render(this.scene, this.camera);
 		},
 		rotateX(mouseY) {
-			this.mesh.rotation.x = mouseY / 100;
+			this.mesh.rotation.x += mouseY / 100;
 		},
 		rotateY(mouseX) {
 			//TODO: need to check cube x and only invert it if it's right side up
-			this.mesh.rotation.y = -(mouseX / 100);
+			this.mesh.rotation.y += mouseX / 100;
 		},
 		render() {
 			this.renderer.render(this.scene, this.camera);
+		},
+		//TODO: move to input handler class
+		keyIsDown(keyCode) {
+			return (
+				this.input.keys.keysDown.includes(keyCode) ||
+				this.input.keys.keyMap[keyCode] === true
+			);
 		}
 	}
 };

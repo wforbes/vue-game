@@ -1,4 +1,5 @@
 // https://isaacsukin.com/news/2015/01/detailed-explanation-javascript-game-loops-and-timing#fps-control
+import Stats from "stats.js";
 export class GameLoop {
 	gameComponent;
 	requestAnimation = undefined;
@@ -13,12 +14,18 @@ export class GameLoop {
 	updateDelta = 0;
 	renderCount = 0;
 
+	stats;
+
 	constructor(game) {
 		this.gameComponent = game;
+		this.stats = new Stats();
+		this.stats.showPanel(0);
 	}
 
 	run(timestamp) {
+		this.stats.begin();
 		if (timestamp < this.lastFrameTimeMs + 1000 / this.maxFPS) {
+			this.stats.end();
 			requestAnimationFrame(this.run.bind(this));
 			return;
 		}
@@ -26,6 +33,7 @@ export class GameLoop {
 		this.computeFPSEstimate(timestamp);
 		this.regulatedUpdate();
 		this.render();
+		this.stats.end();
 		requestAnimationFrame(this.run.bind(this));
 	}
 

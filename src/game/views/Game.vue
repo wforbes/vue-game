@@ -6,7 +6,8 @@
 			<div id="current-time">Current Time: {{ time.current.display }}</div>
 			<div id="session-duration">Session Duration: {{ time.session }}</div>
 			<div id="count">Render Count: {{ gameLoop.renderCount }}</div>
-			<div id="fps">avg FPS: {{ gameLoop.fps.toFixed(3) }}</div>
+			<div id="fps">FPS: ~{{ gameLoop.fps.toFixed(3) }}</div>
+			<div id="statsDOM"></div>
 			<br />
 			<div id="mousemove">
 				mousemove
@@ -36,7 +37,8 @@
 			<br />
 			<div id="mousedown">
 				mousedown
-				<div></div>
+				<div id="left-down">left: {{ input.mousedown.left }}</div>
+				<div id="left-right">right: {{ input.mousedown.right }}</div>
 			</div>
 			<br />
 			<div id="keys">
@@ -55,7 +57,7 @@
 			</div>
 		</div>
 		<div id="overlay" ref="overlay" tabindex="-1"></div>
-		<GameCanvas ref="gameCanvasComponent" :mousemove="input.mousemove" />
+		<GameCanvas ref="gameCanvasComponent" :input="input" />
 	</div>
 </template>
 
@@ -87,6 +89,10 @@ export default {
 					keysDown: [],
 					keyMap: {}
 				},
+				mousedown: {
+					left: false,
+					right: false
+				},
 				mousemove: {
 					offsetX: undefined,
 					offsetY: undefined,
@@ -95,7 +101,9 @@ export default {
 					metaKey: undefined,
 					altKey: undefined,
 					ctrlKey: undefined,
-					shiftKey: undefined
+					shiftKey: undefined,
+					movementX: undefined,
+					movementY: undefined
 				},
 				mouseleave: {
 					leaveCount: 0,
@@ -103,9 +111,6 @@ export default {
 						clientX: undefined,
 						clientY: undefined
 					}
-					/*
-
-					*/
 				}
 			},
 			output: {}
@@ -114,7 +119,7 @@ export default {
 	mounted() {
 		this.init();
 	},
-	destroyed() {
+	beforeDestroy() {
 		this.tearDown();
 	},
 	methods: {
@@ -123,6 +128,9 @@ export default {
 			this.addInputListeners();
 			this.$refs.overlay.focus();
 			//this.animate();
+			let sd = document.querySelector("#statsDOM");
+			sd.appendChild(this.gameLoop.stats.dom);
+			sd.style.zIndex = "inherit";
 			this.gameLoop.run(0);
 		},
 		addInputListeners() {
@@ -130,8 +138,10 @@ export default {
 			document.addEventListener("keyup", this.handleKey);
 			document.addEventListener("mousemove", this.mousemove);
 			document.addEventListener("mouseleave", this.mouseleave);
-			document.addEventListener("click", this.handleLeftClick);
-			document.addEventListener("contextmenu", this.handleRightClick);
+			//document.addEventListener("click", this.handleLeftClick);
+			document.addEventListener("mousedown", this.handleMouseDown);
+			document.addEventListener("mouseup", this.handleMouseUp);
+			document.addEventListener("contextmenu", this.handleContextMenu);
 		},
 		tearDown() {
 			this.removeInputListeners();
@@ -141,7 +151,10 @@ export default {
 			document.removeEventListener("keyup", this.handleKey);
 			document.removeEventListener("mousemove", this.mousemove);
 			document.removeEventListener("mouseleave", this.mouseleave);
-			document.removeEventListener("contextmenu", this.handleRightClick);
+			//document.addEventListener("click", this.handleLeftClick);
+			document.addEventListener("mousedown", this.handleMouseDown);
+			document.addEventListener("mouseup", this.handleMouseUp);
+			document.removeEventListener("contextmenu", this.handleContextMenu);
 		},
 		mousemove(event) {
 			event.preventDefault();
@@ -162,6 +175,8 @@ export default {
 			this.input.mousemove.ctrlKey = event.ctrlKey;
 			this.input.mousemove.altKey = event.altKey;
 			this.input.mousemove.shiftKey = event.shiftKey;
+			this.input.mousemove.movementX = event.movementX;
+			this.input.mousemove.movementY = event.movementY;
 		},
 		mouseleave(event) {
 			//console.log(event);
@@ -188,13 +203,27 @@ export default {
 				}
 			}
 		},
-		handleLeftClick(event) {
-			console.log(event);
+		keyIsDown(keyCode) {
+			return (
+				this.input.keys.keysDown.includes(keyCode) ||
+				this.input.keys.keyMap[keyCode] === true
+			);
 		},
-		handleRightClick(event) {
+		handleMouseDown(event) {
+			if (event.button === 0) this.input.mousedown.left = true;
+			if (event.button === 2) {
+				event.preventDefault();
+				this.input.mousedown.right = true;
+			}
+		},
+		handleMouseUp(event) {
+			if (event.button === 0) this.input.mousedown.left = false;
+			if (event.button === 2) this.input.mousedown.right = false;
+		},
+		handleContextMenu(event) {
 			event.preventDefault();
-			console.log(event);
 		},
+		checkMouseDown() {},
 		animate() {
 			this.requestAnimation = requestAnimationFrame(this.animate.bind(this));
 			this.render();
@@ -206,6 +235,7 @@ export default {
 			this.time.current.display = this.getTimeDisplay();
 			this.time.session = this.getSessionDuration();
 			this.checkKeyMap();
+			this.checkMouseDown();
 		},
 		panic() {
 			console.log("We got some lag bois.");
@@ -273,5 +303,14 @@ body {
 }
 .leave-last-data {
 	margin-left: 0.25em;
+}
+#statsDOM {
+	height: 50px;
+}
+#statsDOM div {
+	padding-top: 1em;
+	position: relative !important;
+	display: block;
+	z-index: inherit !important;
 }
 </style>
