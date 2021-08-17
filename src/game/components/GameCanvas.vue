@@ -27,26 +27,28 @@ export default {
 		this.removeResizeListener();
 	},
 	computed: {
-		mousemoveX() {
-			return this.input.mousemove.movementX;
+		mouseMovementX() {
+			return this.input.mouseMovement.x;
 		},
-		mousemoveY() {
-			return this.input.mousemove.movementY;
+		mouseMovementY() {
+			return this.input.mouseMovement.y;
 		}
 	},
 	watch: {
-		mousemoveX(newX /*, oldX*/) {
+		mouseMovementX(newX /*, oldX*/) {
 			if (
-				this.input.mousedown.left &&
-				(this.keyIsDown("ControlLeft") || this.keyIsDown("ControlRight"))
+				this.input.mouseState.left &&
+				(this.input.keyIsDown("ControlLeft") ||
+					this.input.keyIsDown("ControlRight"))
 			) {
 				this.rotateY(newX);
 			}
 		},
-		mousemoveY(newY /*, oldY*/) {
+		mouseMovementY(newY /*, oldY*/) {
 			if (
-				this.input.mousedown.left &&
-				(this.keyIsDown("ControlLeft") || this.keyIsDown("ControlRight"))
+				this.input.mouseState.left &&
+				(this.input.keyIsDown("ControlLeft") ||
+					this.input.keyIsDown("ControlRight"))
 			) {
 				this.rotateX(newY);
 			}
@@ -103,13 +105,6 @@ export default {
 		},
 		render() {
 			this.renderer.render(this.scene, this.camera);
-		},
-		//TODO: move to input handler class
-		keyIsDown(keyCode) {
-			return (
-				this.input.keys.keysDown.includes(keyCode) ||
-				this.input.keys.keyMap[keyCode] === true
-			);
 		}
 	}
 };

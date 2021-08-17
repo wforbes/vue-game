@@ -10,58 +10,62 @@
 			<div id="statsDOM"></div>
 			<br />
 			<div id="mousemove">
-				mousemove
-				<div>offsetX: {{ input.mousemove.offsetX }}</div>
-				<div>offsetY: {{ input.mousemove.offsetY }}</div>
-				<div>clientX: {{ input.mousemove.clientX }}</div>
-				<div>clientY: {{ input.mousemove.clientY }}</div>
-				<div>ctrlKey: {{ input.mousemove.ctrlKey }}</div>
-				<div>altKey: {{ input.mousemove.altKey }}</div>
-				<div>shiftKey: {{ input.mousemove.shiftKey }}</div>
-				<div>metaKey: {{ input.mousemove.metaKey }}</div>
+				mouseMovement
+				<div>offsetX: {{ gameInput.mouseMovement.offsetX }}</div>
+				<div>offsetY: {{ gameInput.mouseMovement.offsetY }}</div>
+				<div>clientX: {{ gameInput.mouseMovement.clientX }}</div>
+				<div>clientY: {{ gameInput.mouseMovement.clientY }}</div>
+				<div>ctrlKey: {{ gameInput.mouseMovement.ctrlKey }}</div>
+				<div>altKey: {{ gameInput.mouseMovement.altKey }}</div>
+				<div>shiftKey: {{ gameInput.mouseMovement.shiftKey }}</div>
+				<div>metaKey: {{ gameInput.mouseMovement.metaKey }}</div>
 			</div>
 			<br />
 			<div id="mouseleave">
-				mouseleave
-				<div id="leave-count">count: {{ input.mouseleave.leaveCount }}</div>
+				mouseLeave
+				<div id="leave-count">count: {{ gameInput.mouseLeave.leaveCount }}</div>
 				<div id="leave-last">
 					last leave:
 					<div class="leave-last-data">
-						x: {{ input.mouseleave.last.clientX }}
+						x: {{ gameInput.mouseLeave.last.clientX }}
 					</div>
 					<div class="leave-last-data">
-						y: {{ input.mouseleave.last.clientY }}
+						y: {{ gameInput.mouseLeave.last.clientY }}
 					</div>
 				</div>
 			</div>
 			<br />
 			<div id="mousedown">
-				mousedown
-				<div id="left-down">left: {{ input.mousedown.left }}</div>
-				<div id="left-right">right: {{ input.mousedown.right }}</div>
+				mouseState
+				<div id="left-down">left: {{ gameInput.mouseState.left }}</div>
+				<div id="left-right">right: {{ gameInput.mouseState.right }}</div>
 			</div>
 			<br />
 			<div id="keys">
 				<div id="key-down">
 					keys down:
-					<span v-for="key of input.keys.keysDown" :key="key">{{
+					<span v-for="key of gameInput.keys.keysDown" :key="key">{{
 						`${key} `
 					}}</span>
 				</div>
 				<div id="key-map">
 					keymap:
-					<div v-for="(keyValue, keyName) in input.keys.keyMap" :key="keyName">
+					<div
+						v-for="(keyValue, keyName) in gameInput.keys.keyMap"
+						:key="keyName"
+					>
 						{{ keyName }} : {{ keyValue }}
 					</div>
 				</div>
 			</div>
 		</div>
 		<div id="overlay" ref="overlay" tabindex="-1"></div>
-		<GameCanvas ref="gameCanvasComponent" :input="input" />
+		<GameCanvas ref="gameCanvasComponent" :input="gameInput" />
 	</div>
 </template>
 
 <script>
+import { GameInput } from "@/game/controllers/GameInput.js";
 import { GameLoop } from "@/game/controllers/GameLoop.js";
 import GameCanvas from "@/game/components/GameCanvas.vue";
 export default {
@@ -72,6 +76,7 @@ export default {
 	data() {
 		return {
 			gameLoop: new GameLoop(this),
+			gameInput: new GameInput(),
 			time: {
 				created: {
 					actual: new Date(),
@@ -83,37 +88,7 @@ export default {
 					display: this.getTimeDisplay()
 				},
 				session: undefined
-			},
-			input: {
-				keys: {
-					keysDown: [],
-					keyMap: {}
-				},
-				mousedown: {
-					left: false,
-					right: false
-				},
-				mousemove: {
-					offsetX: undefined,
-					offsetY: undefined,
-					clientX: undefined,
-					clientY: undefined,
-					metaKey: undefined,
-					altKey: undefined,
-					ctrlKey: undefined,
-					shiftKey: undefined,
-					movementX: undefined,
-					movementY: undefined
-				},
-				mouseleave: {
-					leaveCount: 0,
-					last: {
-						clientX: undefined,
-						clientY: undefined
-					}
-				}
-			},
-			output: {}
+			}
 		};
 	},
 	mounted() {
@@ -124,8 +99,7 @@ export default {
 	},
 	methods: {
 		init() {
-			if (this.gameLoop === undefined) this.gameLoop = new GameLoop(this);
-			this.addInputListeners();
+			this.gameInput.addInputListeners();
 			this.$refs.overlay.focus();
 			//this.animate();
 			let sd = document.querySelector("#statsDOM");
@@ -133,97 +107,9 @@ export default {
 			sd.style.zIndex = "inherit";
 			this.gameLoop.run(0);
 		},
-		addInputListeners() {
-			document.addEventListener("keydown", this.handleKey);
-			document.addEventListener("keyup", this.handleKey);
-			document.addEventListener("mousemove", this.mousemove);
-			document.addEventListener("mouseleave", this.mouseleave);
-			//document.addEventListener("click", this.handleLeftClick);
-			document.addEventListener("mousedown", this.handleMouseDown);
-			document.addEventListener("mouseup", this.handleMouseUp);
-			document.addEventListener("contextmenu", this.handleContextMenu);
-		},
 		tearDown() {
-			this.removeInputListeners();
+			this.gameInput.removeInputListeners();
 		},
-		removeInputListeners() {
-			document.removeEventListener("keydown", this.handleKey);
-			document.removeEventListener("keyup", this.handleKey);
-			document.removeEventListener("mousemove", this.mousemove);
-			document.removeEventListener("mouseleave", this.mouseleave);
-			//document.addEventListener("click", this.handleLeftClick);
-			document.addEventListener("mousedown", this.handleMouseDown);
-			document.addEventListener("mouseup", this.handleMouseUp);
-			document.removeEventListener("contextmenu", this.handleContextMenu);
-		},
-		mousemove(event) {
-			event.preventDefault();
-			//altKey, ctrlKey, shiftKey, metaKey - (Meta key is Windows key.)
-			//bubbles, button, buttons, cancelBubble, cancelable, composed, currentTarget
-			//target, srcElement, path, sourceCapabilities, toElement
-			//defaultPrevented, detail, eventPhase, fromElement, isTrusted
-			//layerX, layerY
-			//movementX, movementY, pageX, pageY, path
-			//screenX, screenY
-			//x, y
-			//timestamp, type, view, which
-			this.input.mousemove.offsetX = event.offsetX;
-			this.input.mousemove.offsetY = event.offsetY;
-			this.input.mousemove.clientX = event.clientX;
-			this.input.mousemove.clientY = event.clientY;
-			this.input.mousemove.metaKey = event.metaKey;
-			this.input.mousemove.ctrlKey = event.ctrlKey;
-			this.input.mousemove.altKey = event.altKey;
-			this.input.mousemove.shiftKey = event.shiftKey;
-			this.input.mousemove.movementX = event.movementX;
-			this.input.mousemove.movementY = event.movementY;
-		},
-		mouseleave(event) {
-			//console.log(event);
-			this.input.mouseleave.leaveCount++;
-			this.input.mouseleave.last.clientX = event.clientX;
-			this.input.mouseleave.last.clientY = event.clientY;
-		},
-		handleKey(event) {
-			event.preventDefault();
-			this.input.keys.keyMap[event.code] = event.type == "keydown";
-		},
-		checkKeyMap() {
-			for (let key in this.input.keys.keyMap) {
-				if (this.input.keys.keyMap[key] === true) {
-					if (!this.input.keys.keysDown.includes(key)) {
-						this.input.keys.keysDown.push(key);
-					}
-				} else {
-					if (this.input.keys.keysDown.includes(key)) {
-						let keyIdx = this.input.keys.keysDown.findIndex((k) => k === key);
-						this.input.keys.keysDown.splice(keyIdx, 1);
-					}
-					delete this.input.keys.keyMap[key];
-				}
-			}
-		},
-		keyIsDown(keyCode) {
-			return (
-				this.input.keys.keysDown.includes(keyCode) ||
-				this.input.keys.keyMap[keyCode] === true
-			);
-		},
-		handleMouseDown(event) {
-			if (event.button === 0) this.input.mousedown.left = true;
-			if (event.button === 2) {
-				event.preventDefault();
-				this.input.mousedown.right = true;
-			}
-		},
-		handleMouseUp(event) {
-			if (event.button === 0) this.input.mousedown.left = false;
-			if (event.button === 2) this.input.mousedown.right = false;
-		},
-		handleContextMenu(event) {
-			event.preventDefault();
-		},
-		checkMouseDown() {},
 		animate() {
 			this.requestAnimation = requestAnimationFrame(this.animate.bind(this));
 			this.render();
@@ -234,8 +120,8 @@ export default {
 			this.time.current.actual = new Date();
 			this.time.current.display = this.getTimeDisplay();
 			this.time.session = this.getSessionDuration();
-			this.checkKeyMap();
-			this.checkMouseDown();
+			this.gameInput.checkKeyMap();
+			//this.gameInput.checkMouseDown();
 		},
 		panic() {
 			console.log("We got some lag bois.");
