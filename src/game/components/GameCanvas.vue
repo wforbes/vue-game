@@ -22,6 +22,9 @@ export default {
 		this.initCanvas();
 		this.initThree();
 	},
+	destroyed() {
+		this.removeResizeListener();
+	},
 	computed: {
 		mousemoveX() {
 			return this.mousemove.offsetX;
@@ -43,6 +46,18 @@ export default {
 			this.canvas = this.$refs.gameCanvas;
 			this.canvas.width = window.innerWidth;
 			this.canvas.height = window.innerHeight;
+			this.addResizeListener();
+		},
+		addResizeListener() {
+			window.addEventListener("resize", this.resizeCanvas.bind(this), false);
+		},
+		removeResizeListener() {
+			window.removeEventListener("resize", this.resizeCanvas.bind(this), false);
+		},
+		resizeCanvas() {
+			this.camera.aspect = window.innerWidth / window.innerHeight;
+			this.camera.updateProjectionMatrix();
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
 		},
 		initThree() {
 			this.camera = new THREE.PerspectiveCamera(
@@ -72,6 +87,7 @@ export default {
 			this.mesh.rotation.x = mouseY / 100;
 		},
 		rotateY(mouseX) {
+			//TODO: need to check cube x and only invert it if it's right side up
 			this.mesh.rotation.y = -(mouseX / 100);
 		},
 		render() {
