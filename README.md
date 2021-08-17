@@ -20,7 +20,7 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 
 ![Gif of Day 1 Progress](https://wforbes.net/wp-content/uploads/2021/08/vue_game_day1.gif)
 
-### Next Steps
+### Day 2
 
 * [X] - Measure FPS and fine tune the game loop.
 * [X] - Resize the canvas with the browser window.
@@ -29,6 +29,11 @@ Demo - [https://wforbes.github.io/vue-game](https://wforbes.github.io/vue-game)
 * [X] - When mouse hovers over the cube, highlight the cube slightly.
 * [X] - Add more cubes, mimicing [threejs Fundamentals](https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html),
 but randomizing their color and x/y positions so that they don't collide
+
+![Gif of Day 1 Progress](https://wforbes.net/wp-content/uploads/2021/08/vue_game_day2_2.gif)
+
+### Next Steps
+
 * [ ] - Improve mouse/keyboard controls related to camera, scene, and mesh. ([three.js controls code](https://github.com/mrdoob/three.js/tree/master/examples/jsm/controls))
 * [ ] - Try some more demos from the [three.js examples](https://threejs.org/examples)
 * [ ] - Experiment with making it mobile friendly.
