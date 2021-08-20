@@ -78,15 +78,10 @@ export default {
 			this.addResizeListener();
 		},
 		addResizeListener() {
-			window.addEventListener("resize", this.resizeCanvas.bind(this), false);
+			//window.addEventListener("resize", this.resizeCanvas.bind(this), false);
 		},
 		removeResizeListener() {
-			window.removeEventListener("resize", this.resizeCanvas.bind(this), false);
-		},
-		resizeCanvas() {
-			this.camera.aspect = window.innerWidth / window.innerHeight;
-			this.camera.updateProjectionMatrix();
-			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			//window.removeEventListener("resize", this.resizeCanvas.bind(this), false);
 		},
 		initThree() {
 			this.camera = new THREE.PerspectiveCamera(
@@ -101,6 +96,7 @@ export default {
 			this.raycaster = new THREE.Raycaster();
 
 			this.scene = new THREE.Scene();
+			this.scene.background = new THREE.Color(0x00aafa);
 
 			this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
 			this.material = new THREE.MeshNormalMaterial();
@@ -120,8 +116,8 @@ export default {
 				antialias: true
 			});
 			this.renderer.setPixelRatio(window.devicePixelRatio);
-			this.renderer.setSize(this.canvas.width, this.canvas.height);
-			this.renderer.render(this.scene, this.camera);
+			//this.renderer.setSize(this.canvas.clientwidth, this.canvas.height);
+			//this.renderer.render(this.scene, this.camera);
 		},
 		addLights() {
 			this.light = new THREE.DirectionalLight(0xff33bb, 2);
@@ -194,9 +190,27 @@ export default {
 			}
 		},
 		render(timestamp) {
+			if (this.resizeRendererToDisplaySize()) {
+				const _canvas = this.renderer.domElement;
+				this.camera.aspect = _canvas.clientWidth / _canvas.clientHeight;
+				this.camera.updateProjectionMatrix();
+			}
 			this.checkPointerRaycastIntersection();
 			this.rotateCubes(timestamp);
 			this.renderer.render(this.scene, this.camera);
+		},
+		resizeRendererToDisplaySize() {
+			const _canvas = this.renderer.domElement;
+			const pixelRatio = window.devicePixelRatio;
+			//console.log(_canvas, pixelRatio);
+			const width = (_canvas.clientWidth * pixelRatio) | 0;
+			const height = (_canvas.clientHeight * pixelRatio) | 0;
+			const needResize = _canvas.width !== width || _canvas.height !== height;
+			console.log(needResize);
+			if (needResize) {
+				this.renderer.setSize(width, height, false);
+			}
+			return needResize;
 		},
 		rotateCubes(time) {
 			time *= 0.001;
@@ -239,6 +253,12 @@ export default {
 						this.INTERSECTED.material.emissive.getHex();
 					this.INTERSECTED.material.emissive.setHex(0x777777);
 				}
+				if (this.input.mouseState.left) {
+					//console.log("we should drag", this.INTERSECTED);
+					this.INTERSECTED.material.emissive.setHex(0xbbbbbb);
+				} else {
+					this.INTERSECTED.material.emissive.setHex(0x777777);
+				}
 			} else {
 				if (this.INTERSECTED)
 					this.INTERSECTED.material.emissive.setHex(
@@ -253,8 +273,9 @@ export default {
 </script>
 <style>
 canvas {
-	position: fixed;
+	display: block;
 	margin: 0;
-	padding: 0;
+	width: 100%;
+	height: 100%;
 }
 </style>

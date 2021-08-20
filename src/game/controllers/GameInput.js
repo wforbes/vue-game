@@ -40,6 +40,7 @@ export class GameInput {
 		document.addEventListener("mousedown", this.handleMouseDown.bind(this));
 		document.addEventListener("mouseup", this.handleMouseUp.bind(this));
 		document.addEventListener("contextmenu", this.handleContextMenu.bind(this));
+		document.addEventListener("onscroll", this.handleMouseScroll.bind(this));
 	}
 
 	removeInputListeners() {
@@ -51,12 +52,13 @@ export class GameInput {
 			this.handleMouseLeave.bind(this)
 		);
 		//document.addEventListener("click", this.handleLeftClick);
-		document.addEventListener("mousedown", this.handleMouseDown.bind(this));
-		document.addEventListener("mouseup", this.handleMouseUp.bind(this));
+		document.removeEventListener("mousedown", this.handleMouseDown.bind(this));
+		document.removeEventListener("mouseup", this.handleMouseUp.bind(this));
 		document.removeEventListener(
 			"contextmenu",
 			this.handleContextMenu.bind(this)
 		);
+		document.removeEventListener("onscroll", this.handleMouseScroll.bind(this));
 	}
 
 	handleMouseMove(event) {
@@ -133,5 +135,7 @@ export class GameInput {
 		event.preventDefault();
 	}
 
-	checkMouseDown() {}
+	handleMouseScroll(event) {
+		console.log(event);
+	}
 }

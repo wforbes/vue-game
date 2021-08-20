@@ -161,9 +161,15 @@ export default {
 </script>
 <style>
 body {
-	margin: 0;
+	margin: 0 !important;
+	padding: 0;
 	margin-right: 0.8em;
 	font-family: sans-serif;
+	height: 100%;
+}
+#game {
+	width: 100%;
+	height: 100%;
 }
 #overlay {
 	position: fixed;
